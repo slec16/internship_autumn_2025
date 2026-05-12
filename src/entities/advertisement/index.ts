@@ -1,4 +1,4 @@
-export type { Advertisement  } from './model/types'
+export { type Advertisement, type Status  } from './model/types'
 export { 
     advertisementsKeys, 
     useAdvertisements,
@@ -7,3 +7,4 @@ export {
     useRejectAdvertisement,
     useRequestChangesAdvertisement
 } from './model/queries'
+export { getStatusLabel, categoryMap } from "./lib/lib"

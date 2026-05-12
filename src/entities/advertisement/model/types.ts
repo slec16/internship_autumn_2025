@@ -5,8 +5,8 @@ export type Advertisement = {
     price: number
     category: string
     categoryId: number
-    status: status
-    priority: priority
+    status: Status
+    priority: Priority
     createdAt: string
     updatedAt: string
     images: string[]
@@ -15,17 +15,9 @@ export type Advertisement = {
     moderationHistory: Record<string, string>[]
 }
 
-enum status {
-    "pending",
-    "approved",
-    "rejected",
-    "draft",
-}
+export type Status = "pending" | "approved" | "rejected" | "draft"
 
-enum priority {
-    "normal",
-    "urgent"
-}
+export type Priority = "normal" | "urgent"
 
 export type Seller = {
     id: number,
@@ -38,7 +30,7 @@ export type Seller = {
 export interface IAdvertisementsParams {
     page: number
     limit: number
-    status: status[]
+    status: Status[]
     categoryId: number
     minPrice: number
     maxPrice: number

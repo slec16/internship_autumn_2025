@@ -1,5 +1,6 @@
 
 import { useAdvertisements } from "@/entities/advertisement"
+import Filters from "@/widgets/filters"
 
 const ListPage = () => {
 
@@ -10,7 +11,7 @@ const ListPage = () => {
  
     return(
         <div>
-            ListPage
+            <Filters />
         </div>
     )
 }
