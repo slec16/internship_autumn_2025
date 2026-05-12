@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router"
 import ItemDetailsPage from "@/pages/item"
 import ListPage from "@/pages/list"
 import StatsPage from "@/pages/stats"
-import Layout from "@/widgets/Layout"
+import Layout from "@/widgets/layout"
 
 // TODO: error boundary
 const NotFoundError = () => {

@@ -1,5 +1,5 @@
 
-import { useAdvertisements } from "@/entities/Advertisement"
+import { useAdvertisements } from "@/entities/advertisement"
 
 const ListPage = () => {
 
