@@ -14,7 +14,6 @@ export const ThemeContext = createContext<ThemeContextValue | undefined>(undefin
 
 export const useTheme = (): ThemeContextValue => {
     const context = useContext(ThemeContext)
-    console.log(context)
     if(!context) {
         throw new Error('Theme error')
     }
