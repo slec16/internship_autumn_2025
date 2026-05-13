@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router'
 
-type ParamValue = string | string[]
+type ParamValue = string | string[] | undefined
 type QueryParams = Record<string, ParamValue>
 
 function toSearchParams(params: QueryParams): URLSearchParams {

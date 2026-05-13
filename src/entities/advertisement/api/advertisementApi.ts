@@ -11,26 +11,37 @@ import type {
 const baseUrl = "/api/v1"
 
 export const advertisementApi = {
-    getAdvertisements: async ( params: Partial<IAdvertisementsParams> ): Promise<IAdvertisementsResponse> => {
-        const response = await fetch(`${baseUrl}/ads`)
+    getAdvertisements: async (params: any): Promise<IAdvertisementsResponse> => {
+
+        const requestParams = new URLSearchParams();
+
+        for (const [key, value] of Object.entries(params)) {
+            if (Array.isArray(value)) {
+                value.forEach(v => requestParams.append(key, String(v)))
+            } else {
+                requestParams.append(key, String(value))
+            }
+        }
+
+        const response = await fetch(`${baseUrl}/ads?${requestParams.toString()}`)
         if (!response.ok) throw new Error('Failed to fetch advertisements')
         return response.json()
     },
 
-    getAdvertisement: async ( id: string ): Promise<Advertisement> => {
+    getAdvertisement: async (id: string): Promise<Advertisement> => {
         const response = await fetch(`${baseUrl}/ads/${id}`)
         if (!response.ok) throw new Error('Failed to fetch advertisement')
         return response.json()
     },
 
-    approveAdvertisement: async ( id: string ) => {
+    approveAdvertisement: async (id: string) => {
         const response = await fetch(`${baseUrl}/ads/${id}/approve`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-        } )
+        })
     },
 
-    rejectAdvertisement: async ( id: string, params: IAdvertisementsRejectParams ) => {
+    rejectAdvertisement: async (id: string, params: IAdvertisementsRejectParams) => {
         const response = await fetch(`${baseUrl}/ads/${id}/reject`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -38,7 +49,7 @@ export const advertisementApi = {
         })
     },
 
-    requestChangesAdvertisement: async ( id: string, params: IAdvertisementsRejectParams ) => {
+    requestChangesAdvertisement: async (id: string, params: IAdvertisementsRejectParams) => {
         const response = await fetch(`${baseUrl}/ads/${id}/request-changes`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -46,5 +57,5 @@ export const advertisementApi = {
         })
     }
 
-    
+
 }

@@ -1,19 +1,24 @@
 import { useState } from 'react'
-import { Input, Button, Checkbox, InputNumber, Select } from 'antd'
-import { SearchOutlined, FilterOutlined, BarsOutlined } from '@ant-design/icons'
+import { Input, Button, Checkbox, InputNumber, Select, Radio } from 'antd'
+import type { CheckboxGroupProps } from 'antd/es/checkbox'
+import { SearchOutlined, FilterOutlined, BarsOutlined, CloseOutlined } from '@ant-design/icons'
 import { getStatusLabel, categoryMap, type Status } from "@entities/advertisement"
 import { useQueryParams } from '@/shared/lib/useQueryParams'
-
+import { parseQueryString } from "../lib/parseQueryString"
 const Filters = () => {
 
     const [params, setParams] = useQueryParams()
-    const [showFilters, setShowFilters] = useState(true)
+    const [showFilters, setShowFilters] = useState(false)
 
     const search = (params.search as string) || ''
-    const selectedStatuses = (params.statuses as string[]) || []
-    const selectedCategories = (params.categories as string[]) || []
-    const minPrice = (params.min as string) || ''
-    const maxPrice = (params.max as string) || ''
+    const selectedStatuses = (params.status as string[]) || []
+    const selectedCategory = (params.categoryId as string) || ''
+    const minPrice = (params.minPrice as string) || ''
+    const maxPrice = (params.maxPrice as string) || ''
+    const sortBy = (params.sortBy as string) ?? 'createdAt'
+    const sortOrder = (params.sortOrder as string) ?? 'acs'
+
+    const currentValue = `sortBy=${sortBy}&sortOrder=${sortOrder}`
 
     const toggleStatus = (status: Status) => {
 
@@ -33,32 +38,42 @@ const Filters = () => {
 
         setParams((prev) => ({
             ...prev,
-            statuses: updatedStatuses
+            status: updatedStatuses
         }))
 
     }
 
-    const toggleCategories = (categoryId: string) => {
+    const convertRecordToOptions = (record: Record<number, string>): CheckboxGroupProps<string>['options'] => {
+        return Object.entries(record).map(([key, text]) => ({
+            value: key,
+            label: (
+                <span className="text-base text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white font-medium">
+                    {text}
+                </span>
+            ),
+        }))
+    }
 
-        let currentCategories = selectedCategories
-        if (!Array.isArray(selectedCategories)) {
-            if (typeof currentCategories === 'string' && currentCategories) {
-                currentCategories = [currentCategories]
-            } else {
-                currentCategories = []
-            }
-        }
-
-        const updatedCategories = currentCategories.includes(categoryId)
-            ? currentCategories.filter(s => s !== categoryId)
-            : [...currentCategories, categoryId];
-
+    const handleSort = (value: string) => {
+        const parsed = parseQueryString(value)
+        const newSortBy = (parsed.sortBy as string) || 'createdAt'
+        const newSortOrder = (parsed.sortOrder as string) || 'acs'
 
         setParams((prev) => ({
             ...prev,
-            categories: updatedCategories
+            sortBy: newSortBy,
+            sortOrder: newSortOrder,
         }))
+    }
 
+    const resetFilters = () => {
+        setParams((prev) => ({
+            ...prev,
+            status: [],
+            categoryId: undefined,
+            minPrice: undefined,
+            maxPrice: undefined
+        }))
     }
 
 
@@ -87,6 +102,17 @@ const Filters = () => {
                 >
                     Фильтры
                 </Button>
+                {(selectedStatuses.length > 0 || selectedCategory || minPrice || maxPrice) && (
+                    <Button
+                        icon={<CloseOutlined />}
+                        color='danger'
+                        size='large'
+                        onClick={resetFilters}
+                        variant='solid'
+                    >
+                        Сбросить
+                    </Button>
+                )}
             </div>
             {showFilters && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t-2 border-gray-100 dark:border-gray-700">
@@ -113,15 +139,15 @@ const Filters = () => {
                             Категория
                         </label>
                         <div className="flex flex-col gap-y-3">
-                            {Object.keys(categoryMap).map((categoryId) => (
-                                <Checkbox
-                                    key={categoryId}
-                                    checked={selectedCategories.includes(categoryId)}
-                                    onChange={() => toggleCategories(categoryId)}
-                                >
-                                    <span className="text-base text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white font-medium">{categoryMap[Number(categoryId)]}</span>
-                                </Checkbox>
-                            ))}
+                            <Radio.Group
+                                vertical
+                                value={selectedCategory}
+                                onChange={(e) =>
+                                    setParams((prev) => ({ ...prev, categoryId: e.target.value }))
+                                }
+                                options={convertRecordToOptions(categoryMap)}
+
+                            />
                         </div>
                     </div>
                     <div className='bg-white dark:bg-gray-700 rounded-lg p-4 shadow-sm border border-blue-100 dark:border-gray-600'>
@@ -131,22 +157,24 @@ const Filters = () => {
                         </label>
                         <div className="flex flex-col gap-y-3">
                             <InputNumber
+                                type='number'
                                 style={{ width: '100%' }}
                                 placeholder='От'
                                 min='0'
                                 max={maxPrice}
                                 value={minPrice}
                                 onChange={(e) =>
-                                    setParams((prev) => ({ ...prev, min: String(e) }))
+                                    setParams((prev) => ({ ...prev, minPrice: e !== null ? String(e) : undefined }))
                                 }
                             />
                             <InputNumber
+                                type='number'
                                 style={{ width: '100%' }}
                                 placeholder='До'
                                 min={minPrice}
                                 value={maxPrice}
                                 onChange={(e) =>
-                                    setParams((prev) => ({ ...prev, max: String(e) }))
+                                    setParams((prev) => ({ ...prev, maxPrice: e !== null ? String(e) : undefined }))
                                 }
                             />
                         </div>
@@ -167,7 +195,7 @@ const Filters = () => {
                     </label>
                     <Select
                         style={{ width: 220 }}
-                        defaultValue={'sortBy=createdAt&sortOrder=acs'}
+                        value={currentValue}
                         options={[
                             { value: 'sortBy=createdAt&sortOrder=acs', label: 'Сначала новые' },
                             { value: 'sortBy=createdAt&sortOrder=desc', label: 'Сначала старые' },
@@ -175,6 +203,7 @@ const Filters = () => {
                             { value: 'sortBy=price&sortOrder=decs', label: 'Цена по возрастанию' },
                             { value: 'sortBy=priority&sortOrder=acs', label: 'По приоритету' },
                         ]}
+                        onChange={handleSort}
                     />
                 </div>
             </div>
