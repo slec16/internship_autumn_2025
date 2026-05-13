@@ -1,12 +1,65 @@
 import { useState } from 'react'
-import { Input, Button, Checkbox, type CheckboxProps, InputNumber, Select } from 'antd'
+import { Input, Button, Checkbox, InputNumber, Select } from 'antd'
 import { SearchOutlined, FilterOutlined, BarsOutlined } from '@ant-design/icons'
 import { getStatusLabel, categoryMap, type Status } from "@entities/advertisement"
+import { useQueryParams } from '@/shared/lib/useQueryParams'
 
 const Filters = () => {
 
-    const [showFilters, setShowFilters] = useState(false)
+    const [params, setParams] = useQueryParams()
+    const [showFilters, setShowFilters] = useState(true)
 
+    const search = (params.search as string) || ''
+    const selectedStatuses = (params.statuses as string[]) || []
+    const selectedCategories = (params.categories as string[]) || []
+    const minPrice = (params.min as string) || ''
+    const maxPrice = (params.max as string) || ''
+
+    const toggleStatus = (status: Status) => {
+
+        let currentStatuses = selectedStatuses
+        if (!Array.isArray(selectedStatuses)) {
+            if (typeof currentStatuses === 'string' && currentStatuses) {
+                currentStatuses = [currentStatuses]
+            } else {
+                currentStatuses = []
+            }
+        }
+
+        const updatedStatuses = currentStatuses.includes(status)
+            ? currentStatuses.filter(s => s !== status)
+            : [...currentStatuses, status];
+
+
+        setParams((prev) => ({
+            ...prev,
+            statuses: updatedStatuses
+        }))
+
+    }
+
+    const toggleCategories = (categoryId: string) => {
+
+        let currentCategories = selectedCategories
+        if (!Array.isArray(selectedCategories)) {
+            if (typeof currentCategories === 'string' && currentCategories) {
+                currentCategories = [currentCategories]
+            } else {
+                currentCategories = []
+            }
+        }
+
+        const updatedCategories = currentCategories.includes(categoryId)
+            ? currentCategories.filter(s => s !== categoryId)
+            : [...currentCategories, categoryId];
+
+
+        setParams((prev) => ({
+            ...prev,
+            categories: updatedCategories
+        }))
+
+    }
 
 
     return (
@@ -18,6 +71,11 @@ const Filters = () => {
                         placeholder="Поиск по названию объявления..."
                         size='large'
                         prefix={<SearchOutlined />}
+                        allowClear
+                        value={search}
+                        onChange={(e) =>
+                            setParams((prev) => ({ ...prev, search: e.target.value }))
+                        }
                     />
                 </div>
                 <Button
@@ -41,6 +99,8 @@ const Filters = () => {
                             {(["pending", "approved", "rejected", "draft"] as Status[]).map((status) => (
                                 <Checkbox
                                     key={status}
+                                    checked={selectedStatuses.includes(status)}
+                                    onChange={() => toggleStatus(status)}
                                 >
                                     <span className="text-base text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white font-medium">{getStatusLabel(status)}</span>
                                 </Checkbox>
@@ -56,6 +116,8 @@ const Filters = () => {
                             {Object.keys(categoryMap).map((categoryId) => (
                                 <Checkbox
                                     key={categoryId}
+                                    checked={selectedCategories.includes(categoryId)}
+                                    onChange={() => toggleCategories(categoryId)}
                                 >
                                     <span className="text-base text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white font-medium">{categoryMap[Number(categoryId)]}</span>
                                 </Checkbox>
@@ -71,10 +133,21 @@ const Filters = () => {
                             <InputNumber
                                 style={{ width: '100%' }}
                                 placeholder='От'
+                                min='0'
+                                max={maxPrice}
+                                value={minPrice}
+                                onChange={(e) =>
+                                    setParams((prev) => ({ ...prev, min: String(e) }))
+                                }
                             />
                             <InputNumber
                                 style={{ width: '100%' }}
                                 placeholder='До'
+                                min={minPrice}
+                                value={maxPrice}
+                                onChange={(e) =>
+                                    setParams((prev) => ({ ...prev, max: String(e) }))
+                                }
                             />
                         </div>
                     </div>

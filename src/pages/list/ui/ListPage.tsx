@@ -1,13 +1,13 @@
 
-import { useAdvertisements } from "@/entities/advertisement"
+// import { useAdvertisements } from "@/entities/advertisement"
 import Filters from "@/widgets/filters"
 
 const ListPage = () => {
 
 
-    const { data: Advertisement, isLoading, error } = useAdvertisements()
+    // const { data: Advertisement, isLoading, error } = useAdvertisements()
 
-    console.log(Advertisement)
+    // console.log(Advertisement)
  
     return(
         <div>
