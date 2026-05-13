@@ -1,2 +1,11 @@
 @import "tailwindcss";
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+:root {
+  --icon-color-primary: #8c8c8c;
+}
+
+/* Темная тема */
+[data-theme="dark"] {
+  --icon-color-primary: #a6a6a6;
+}

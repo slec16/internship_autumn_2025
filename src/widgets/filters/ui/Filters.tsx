@@ -5,7 +5,14 @@ import { SearchOutlined, FilterOutlined, BarsOutlined, CloseOutlined } from '@an
 import { getStatusLabel, categoryMap, type Status } from "@entities/advertisement"
 import { useQueryParams } from '@/shared/lib/useQueryParams'
 import { parseQueryString } from "../lib/parseQueryString"
-const Filters = () => {
+
+type FiltersProps = {
+    totalItems: number | undefined
+}
+
+const Filters = (props: FiltersProps) => {
+
+    const { totalItems } = props
 
     const [params, setParams] = useQueryParams()
     const [showFilters, setShowFilters] = useState(false)
@@ -184,7 +191,7 @@ const Filters = () => {
             <div className="flex justify-between items-center pt-4 border-t-2 border-gray-100 dark:border-gray-700">
                 <div className="flex items-center gap-4">
                     <div className="text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Найдено:</span> <span className="font-bold text-blue-600 dark:text-blue-400 text-lg">67</span> <span className="text-gray-600 dark:text-gray-400">объявлений</span>
+                        <span className="text-gray-600 dark:text-gray-400">Найдено:</span> <span className="font-bold text-blue-600 dark:text-blue-400 text-lg">{totalItems ? totalItems : '-'}</span> <span className="text-gray-600 dark:text-gray-400">объявлений</span>
                     </div>
 
                 </div>
