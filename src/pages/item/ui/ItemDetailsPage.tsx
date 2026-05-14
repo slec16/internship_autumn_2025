@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { useParams, useNavigate, Link } from "react-router"
 import { useAdvertisement } from "@/entities/advertisement"
-import { getStatusLabel, getStatusColor } from "@entities/advertisement"
-import { Button } from "antd"
+import { getStatusLabel, getStatusColor, getModerationActionToColor, getModerationActionLabel } from "@entities/advertisement"
+import { Button, Input } from "antd"
 import {
     LeftOutlined,
     RightOutlined,
@@ -10,8 +10,13 @@ import {
     UserOutlined,
     StarOutlined,
     InboxOutlined,
-    CalendarOutlined
+    CalendarOutlined,
+    CheckOutlined,
+    CloseOutlined,
+    ClockCircleOutlined,
 } from '@ant-design/icons'
+
+const { TextArea } = Input
 
 const ItemDetailsPage = () => {
 
@@ -28,7 +33,6 @@ const ItemDetailsPage = () => {
     const { data: advertisement, isLoading, error } = useAdvertisement(id)
 
     console.log(advertisement)
-
 
     if (!advertisement) {
         return (
@@ -48,7 +52,6 @@ const ItemDetailsPage = () => {
     if (isLoading) return (
         <div>Загрузка...</div>
     )
-
 
     return (
         <div className="space-y-6">
@@ -129,7 +132,7 @@ const ItemDetailsPage = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-gray-400 mt-4">
+                        <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-gray-300 dark:border-gray-600 mt-4">
                             <div>
                                 <div className="text-sm text-gray-600 dark:text-gray-400">Категория</div>
                                 <div className="font-medium text-gray-900 dark:text-gray-200">{advertisement.category}</div>
@@ -212,6 +215,113 @@ const ItemDetailsPage = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Действия модератора</h2>
+                        <div className="mb-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Комментарий
+                                </label>
+                                <TextArea
+                                    autoSize={{ minRows: 3, maxRows: 7 }}
+                                    placeholder="Добавьте комментарий к решению..."
+                                />
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-y-3">
+                            <Button
+                                icon={<CheckOutlined />}
+                                size="large"
+                                variant="solid"
+                                color="green"
+                                onClick={() => console.log("approve")}
+                            >
+                                Одобрить
+                            </Button>
+                            <Button
+                                icon={<CloseOutlined />}
+                                size="large"
+                                variant="solid"
+                                color="danger"
+                                onClick={() => console.log("Отклонить")}
+                            >
+                                Отклонить
+                            </Button>
+                            <Button
+                                icon={<ClockCircleOutlined />}
+                                size="large"
+                                variant="solid"
+                                color="primary"
+                                onClick={() => console.log("Отправить на дороботку")}
+                            >
+                                Отправить на дороботку
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">История модерации</h2>
+                        {advertisement.moderationHistory.length === 0 ? (
+                            <div className="text-center py-8">
+                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <ClockCircleOutlined />
+                                </div>
+                                <p className="text-gray-500 text-sm">История пустая</p>
+                            </div>
+                        ) : (
+                            <div className="relative">
+                                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
+                                <div className="space-y-6">
+                                    {advertisement.moderationHistory.map((action, _idx) => (
+                                        <div key={action.id} className="relative pl-10">
+                                            <div className={`absolute left-0 w-8 h-8 rounded-full flex items-center justify-center ${action.action === "approved" ? "bg-green-200 dark:bg-green-400" :
+                                                action.action === "rejected" ? "bg-red-200 dark:bg-red-400" :
+                                                    "bg-yellow-100"
+                                                }`}>
+                                                {action.action === "approved" ? (
+                                                    <CheckOutlined />
+                                                ) : action.action === "rejected" ? (
+                                                    <CloseOutlined />
+                                                ) : (
+                                                    <ClockCircleOutlined />
+                                                )}
+                                            </div>
+                                            <div className="bg-gray-50 dark:bg-gray-900 dark:text-gray-200 rounded-lg p-4">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className={`text-xs px-2 py-1 rounded ${getModerationActionToColor(action.action)}`}>
+                                                        {getModerationActionLabel(action.action)}
+                                                    </span>
+                                                    <span className="text-xs text-gray-600 dark:text-gray-300">
+                                                        {new Date(action.timestamp).toLocaleDateString('ru-RU')}
+                                                    </span>
+                                                </div>
+                                                {action.reason && (
+                                                    <div className="flex items-center mb-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 p-1 rounded-xl overflow-hidden">
+                                                        <span className="text-xs px-2 py-1 underline shrink-0">
+                                                            Причина:
+                                                        </span>
+                                                        <p className="text-xs wrap-break-word overflow-y-auto max-h-20">
+                                                            {action.reason}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                <div className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">
+                                                    {action.moderatorName}
+                                                </div>
+                                                {action.comment && (
+                                                    <p className="text-sm text-gray-600 dark:text-gray-300 italic">
+                                                        "{action.comment}"
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

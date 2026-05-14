@@ -7,4 +7,4 @@ export {
     useRejectAdvertisement,
     useRequestChangesAdvertisement
 } from './model/queries'
-export { getStatusLabel, categoryMap, getStatusColor } from "./lib/lib"
+export { getStatusLabel, categoryMap, getStatusColor, getModerationActionLabel, getModerationActionToColor } from "./lib/lib"

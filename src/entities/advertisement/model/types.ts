@@ -12,7 +12,7 @@ export type Advertisement = {
     images: string[]
     seller: Seller
     characteristics: Record<string, string>
-    moderationHistory: Record<string, string>[]
+    moderationHistory: ModerationHistory[]
 }
 
 export type Status = "pending" | "approved" | "rejected" | "draft"
@@ -25,6 +25,16 @@ export type Seller = {
     rating: string,
     totalAds: number
     registeredAt: string
+}
+
+type ModerationHistory = {
+    id: number,
+    moderatorId: number,
+    moderatorName: number,
+    action: "approved" | "rejected" | "requestChanges",
+    reason?: string,
+    comment: string,
+    timestamp: string
 }
 
 export interface IAdvertisementsParams {
