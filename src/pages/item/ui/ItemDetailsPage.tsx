@@ -1,6 +1,11 @@
 import { useState } from "react"
 import { useParams, useNavigate, Link } from "react-router"
-import { useAdvertisement } from "@/entities/advertisement"
+import { 
+    useAdvertisement,
+    useApproveAdvertisement,
+    useRejectAdvertisement,
+    useRequestChangesAdvertisement 
+} from "@/entities/advertisement"
 import { getStatusLabel, getStatusColor, getModerationActionToColor, getModerationActionLabel } from "@entities/advertisement"
 import { Button, Input } from "antd"
 import {
@@ -32,6 +37,10 @@ const ItemDetailsPage = () => {
 
     const { data: advertisement, isLoading, error } = useAdvertisement(id)
 
+    const { mutate: approveAds, isPending: isMutatingApprove } = useApproveAdvertisement()
+    const { mutate: rejectAds, isPending: isMutatingReject } = useRejectAdvertisement()
+    const { mutate: requestChangesAds, isPending: isMutatingRequestChanges } = useRequestChangesAdvertisement()
+
     console.log(advertisement)
 
     if (!advertisement) {
@@ -52,6 +61,28 @@ const ItemDetailsPage = () => {
     if (isLoading) return (
         <div>Загрузка...</div>
     )
+
+    const approveHandler = () => {
+        approveAds(
+            { id: id }, {
+                onSuccess: (res) => {
+                    console.log(res)
+                },
+                onError: (res) => {
+                    console.log(res)
+                }
+            }
+        )
+    }
+
+    const rejectHandler = () => {
+
+        // rejectAds
+    }
+
+    const requestChangesHandler = () => {
+        
+    }
 
     return (
         <div className="space-y-6">
@@ -237,7 +268,8 @@ const ItemDetailsPage = () => {
                                 size="large"
                                 variant="solid"
                                 color="green"
-                                onClick={() => console.log("approve")}
+                                onClick={approveHandler}
+                                disabled={isMutatingApprove}
                             >
                                 Одобрить
                             </Button>
@@ -246,7 +278,7 @@ const ItemDetailsPage = () => {
                                 size="large"
                                 variant="solid"
                                 color="danger"
-                                onClick={() => console.log("Отклонить")}
+                                onClick={rejectHandler}
                             >
                                 Отклонить
                             </Button>
@@ -255,7 +287,7 @@ const ItemDetailsPage = () => {
                                 size="large"
                                 variant="solid"
                                 color="primary"
-                                onClick={() => console.log("Отправить на дороботку")}
+                                onClick={requestChangesHandler}
                             >
                                 Отправить на дороботку
                             </Button>
