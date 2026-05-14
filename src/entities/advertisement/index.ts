@@ -1,4 +1,4 @@
-export { type Advertisement, type Status  } from './model/types'
+export { type Advertisement, type Status, type Reason } from './model/types'
 export { 
     advertisementsKeys, 
     useAdvertisements,

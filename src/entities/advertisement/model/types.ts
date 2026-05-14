@@ -61,16 +61,16 @@ export interface IAdvertisementsResponse {
     pagination: Pagination
 }
 
-export enum reason {
-    "Зaпрещенный товар",
-    "Неверная категория",
-    "Некорректное описание",
-    "Проблемы с фото",
-    "Подозрение на мошенничество",
+export type Reason = 
+    "Зaпрещенный товар" |
+    "Неверная категория" |
+    "Некорректное описание" |
+    "Проблемы с фото" |
+    "Подозрение на мошенничество" |
     "Другое"
-}
+
 
 export interface IAdvertisementsRejectParams {
-    reason: reason
+    reason: Reason
     comment: string
 }

@@ -2,12 +2,9 @@ import { useState } from "react"
 import { useParams, useNavigate, Link } from "react-router"
 import { 
     useAdvertisement,
-    useApproveAdvertisement,
-    useRejectAdvertisement,
-    useRequestChangesAdvertisement 
 } from "@/entities/advertisement"
 import { getStatusLabel, getStatusColor, getModerationActionToColor, getModerationActionLabel } from "@entities/advertisement"
-import { Button, Input } from "antd"
+import { Button } from "antd"
 import {
     LeftOutlined,
     RightOutlined,
@@ -20,8 +17,7 @@ import {
     CloseOutlined,
     ClockCircleOutlined,
 } from '@ant-design/icons'
-
-const { TextArea } = Input
+import ModerationBlock from "@features/moderation-action"
 
 const ItemDetailsPage = () => {
 
@@ -36,10 +32,6 @@ const ItemDetailsPage = () => {
     )
 
     const { data: advertisement, isLoading, error } = useAdvertisement(id)
-
-    const { mutate: approveAds, isPending: isMutatingApprove } = useApproveAdvertisement()
-    const { mutate: rejectAds, isPending: isMutatingReject } = useRejectAdvertisement()
-    const { mutate: requestChangesAds, isPending: isMutatingRequestChanges } = useRequestChangesAdvertisement()
 
     console.log(advertisement)
 
@@ -61,28 +53,6 @@ const ItemDetailsPage = () => {
     if (isLoading) return (
         <div>Загрузка...</div>
     )
-
-    const approveHandler = () => {
-        approveAds(
-            { id: id }, {
-                onSuccess: (res) => {
-                    console.log(res)
-                },
-                onError: (res) => {
-                    console.log(res)
-                }
-            }
-        )
-    }
-
-    const rejectHandler = () => {
-
-        // rejectAds
-    }
-
-    const requestChangesHandler = () => {
-        
-    }
 
     return (
         <div className="space-y-6">
@@ -180,6 +150,7 @@ const ItemDetailsPage = () => {
                             <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">{advertisement.description}</p>
                         </div>
                         {Object.keys(advertisement.characteristics).length > 0 && (
+                            // возможно переписать на timeline - ant
                             <div className="pt-4">
                                 <h3 className="font-semibold text-gray-900 dark:text-gray-200 mb-3">Характеристики</h3>
                                 <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
@@ -249,51 +220,7 @@ const ItemDetailsPage = () => {
                     </div>
                 </div>
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-4">
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Действия модератора</h2>
-                        <div className="mb-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Комментарий
-                                </label>
-                                <TextArea
-                                    autoSize={{ minRows: 3, maxRows: 7 }}
-                                    placeholder="Добавьте комментарий к решению..."
-                                />
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-y-3">
-                            <Button
-                                icon={<CheckOutlined />}
-                                size="large"
-                                variant="solid"
-                                color="green"
-                                onClick={approveHandler}
-                                disabled={isMutatingApprove}
-                            >
-                                Одобрить
-                            </Button>
-                            <Button
-                                icon={<CloseOutlined />}
-                                size="large"
-                                variant="solid"
-                                color="danger"
-                                onClick={rejectHandler}
-                            >
-                                Отклонить
-                            </Button>
-                            <Button
-                                icon={<ClockCircleOutlined />}
-                                size="large"
-                                variant="solid"
-                                color="primary"
-                                onClick={requestChangesHandler}
-                            >
-                                Отправить на дороботку
-                            </Button>
-                        </div>
-                    </div>
-
+                    <ModerationBlock id={id} />
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">История модерации</h2>
                         {advertisement.moderationHistory.length === 0 ? (
