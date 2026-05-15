@@ -3,9 +3,11 @@
 
 :root {
   --icon-color-primary: #8c8c8c;
+  --segmented-color-primary: #e6f4ff;
 }
 
 /* Темная тема */
 [data-theme="dark"] {
   --icon-color-primary: #a6a6a6;
+  --segmented-color-primary: #2a4175;
 }
