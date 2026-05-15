@@ -2,7 +2,7 @@ import { useAdvertisements } from "@/entities/advertisement"
 import Filters from "@/widgets/filters"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
 import { getStatusLabel, categoryMap, type Status, getStatusColor } from "@entities/advertisement"
-import { Pagination, type PaginationProps } from 'antd'
+import { Pagination, type PaginationProps, Spin, Button } from 'antd'
 import { PictureOutlined } from '@ant-design/icons'
 import { Link } from "react-router"
 
@@ -12,12 +12,9 @@ const ListPage = () => {
 
     const page = (params.page as string) || '1'
 
-    const { data: response, isLoading, error } = useAdvertisements(params)
-
-    console.log(response)
+    const { data: response, isLoading, error, refetch, isRefetching } = useAdvertisements(params)
 
     const onChangePage: PaginationProps['onChange'] = (page) => {
-        console.log(page)
         setParams((prev) => ({ ...prev, page: String(page) }))
     }
 
@@ -27,10 +24,20 @@ const ListPage = () => {
                 totalItems={response?.pagination.totalItems}
             />
             {isLoading && (
-                <div>Загрузка...</div>
+                <div className="text-center py-12">
+                    <Spin description="Загрузка..." size="large" />
+                </div>
             )}
             {error && (
-                <div>Произошла ошибка</div>
+                <div className="text-center py-12">
+                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Произошла ошибка</h2>
+                    <Button
+                        onClick={() => refetch()}
+                        loading={isRefetching}
+                    >
+                        Повторить
+                    </Button>
+                </div>
             )}
             {response && (
                 <div className="py-5">
@@ -61,7 +68,7 @@ const ListPage = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <h3 className="px-4 py-2 font-semibold text-lg text-gray-900 dark:text-white line-clamp-2">{item.title}</h3> 
+                                    <h3 className="px-4 py-2 font-semibold text-lg text-gray-900 dark:text-white line-clamp-2">{item.title}</h3>
                                     <div className="px-4 pb-2 space-y-3  mt-auto">
                                         <div className="flex justify-between items-center">
                                             <span className="text-xl font-bold text-gray-900 dark:text-white">

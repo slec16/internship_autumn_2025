@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { useParams, useNavigate, Link } from "react-router"
-import { 
+import {
     useAdvertisement,
 } from "@/entities/advertisement"
 import { getStatusLabel, getStatusColor, getModerationActionToColor, getModerationActionLabel } from "@entities/advertisement"
-import { Button } from "antd"
+import { Button, Spin  } from "antd"
 import {
     LeftOutlined,
     RightOutlined,
@@ -33,25 +33,19 @@ const ItemDetailsPage = () => {
 
     const { data: advertisement, isLoading, error } = useAdvertisement(id)
 
-    console.log(advertisement)
-
-    if (!advertisement) {
-        return (
-            <div className="text-center py-12">
-                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Объявление не найдено</h2>
-                <Link to="/list" className="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-block">
-                    Вернуться к списку
-                </Link>
-            </div>
-        );
-    }
-
     if (error) return (
-        <div>Возникла ошибка</div>
+        <div className="text-center py-12">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Объявление не найдено</h2>
+            <Link to="/list" className="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-block">
+                Вернуться к списку
+            </Link>
+        </div>
     )
 
     if (isLoading) return (
-        <div>Загрузка...</div>
+        <div className="text-center py-12">
+            <Spin description="Загрузка..." size="large" />
+        </div>
     )
 
     return (
