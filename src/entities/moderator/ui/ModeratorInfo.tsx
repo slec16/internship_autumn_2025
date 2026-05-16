@@ -71,7 +71,7 @@ const ModeratorInfo = () => {
             label: 'Права',
             children: <div className="space-y-2">
                 {moderatorInfo.permissions.map(el => (
-                    <p className="font-bold text-gray-800 dark:text-gray-200 mr-2">{el}</p>
+                    <p key={el} className="font-bold text-gray-800 dark:text-gray-200 mr-2">{el}</p>
                 ))}
             </div>
         },

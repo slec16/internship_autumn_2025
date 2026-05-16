@@ -30,3 +30,5 @@ export type ModeratorStats = {
     averageReviewTime: number
     approvalRate: number
 }
+
+export type Period = "today" | "week" | "month"
