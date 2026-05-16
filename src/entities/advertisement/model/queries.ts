@@ -17,7 +17,7 @@ export const advertisementsKeys = {
 
 export const useAdvertisements = (params: Partial<IAdvertisementsParams>) => {
     return useQuery({
-        queryKey: [...advertisementsKeys.lists(), params,],
+        queryKey: [...advertisementsKeys.lists(), params],
         queryFn: () => advertisementApi.getAdvertisements(params),
         staleTime: 1 * 60 * 1000
     })

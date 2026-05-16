@@ -33,6 +33,12 @@ const ItemDetailsPage = () => {
 
     const { data: advertisement, isLoading, error } = useAdvertisement(id)
 
+    if (isLoading) return (
+        <div className="text-center py-12">
+            <Spin description="Загрузка..." size="large" />
+        </div>
+    )
+
     if (error || !advertisement) return (
         <div className="text-center py-12">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Объявление не найдено</h2>
@@ -41,12 +47,7 @@ const ItemDetailsPage = () => {
             </Link>
         </div>
     )
-
-    if (isLoading) return (
-        <div className="text-center py-12">
-            <Spin description="Загрузка..." size="large" />
-        </div>
-    )
+   
 
     return (
         <div className="space-y-6">
