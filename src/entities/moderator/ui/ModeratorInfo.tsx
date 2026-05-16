@@ -1,13 +1,11 @@
 import { useModeratorInfo } from "../model/queries"
-import { Spin, Collapse } from "antd"
+import { Spin, Collapse, Button } from "antd"
 import { UserOutlined } from "@ant-design/icons"
 
 
 const ModeratorInfo = () => {
 
-    const { data: moderatorInfo, isLoading, error } = useModeratorInfo()
-
-    console.log(moderatorInfo)
+    const { data: moderatorInfo, isLoading, error, refetch } = useModeratorInfo()
 
     if (isLoading) {
         return (
@@ -23,9 +21,14 @@ const ModeratorInfo = () => {
         return (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                 <div className="text-center py-7">
-                    <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                    <p className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                         Не удалось загрузить информацию о пользователе
                     </p>
+                    <Button
+                        onClick={() => refetch()}
+                    >
+                        Повторить
+                    </Button>
                 </div>
             </div>
         )
@@ -78,7 +81,7 @@ const ModeratorInfo = () => {
     return (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
             <div className="flex justify-between pb-2 mb-2 border-b-2 border-gray-200 dark:border-gray-500">
-                <div className="flex items-center p-2 rounded-full bg-gray-200 dark:bg-gray-500">
+                <div className="flex items-center p-2 rounded-full bg-blue-200 dark:bg-blue-500">
                     <UserOutlined />
                 </div>
                 <p className="text-xl text-gray-900 dark:text-gray-300">{moderatorInfo.name}</p>
