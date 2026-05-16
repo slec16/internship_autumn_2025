@@ -33,7 +33,7 @@ const ItemDetailsPage = () => {
 
     const { data: advertisement, isLoading, error } = useAdvertisement(id)
 
-    if (error) return (
+    if (error || !advertisement) return (
         <div className="text-center py-12">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Объявление не найдено</h2>
             <Link to="/list" className="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-block">
