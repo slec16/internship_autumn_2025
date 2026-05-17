@@ -25,8 +25,6 @@ const StatsPage = () => {
 
     const { data: summaryStats, isLoading, error, refetch } = useSummaryStats(convertTabValueToAPeriod(period))
 
-    // console.log(summaryStats)
-
     if (isLoading) return (
         <div className="text-center py-12">
             <Spin description="Загрузка..." size="large" />

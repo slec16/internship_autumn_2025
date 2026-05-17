@@ -5,7 +5,7 @@ import {
     addSectorColor,
     type DecisionsData,
 } from "@entities/stats"
-import { PieChart, Pie, Tooltip, ResponsiveContainer } from "recharts"
+import { PieChart, Pie, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { useTheme } from "@/shared/lib/theme"
 import { getModerationActionLabel } from "@entities/advertisement"
 
@@ -13,8 +13,6 @@ const DecisionsChart = ({ period }: { period: string }) => {
 
     const { theme } = useTheme()
     const { data: decisions, isLoading, error, refetch } = useDecisionsChart(convertTabValueToAPeriod(period))
-
-    // console.log(decisions)
 
     if (isLoading) return (
         <div className="text-center py-12">
@@ -44,7 +42,7 @@ const DecisionsChart = ({ period }: { period: string }) => {
     return (
         <div className="w-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow p-4 gap-y-2">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-6">
-                Распределение решений
+                Распределение решений:
             </h3>
             <div>{
                 isEmpty ?
@@ -78,6 +76,12 @@ const DecisionsChart = ({ period }: { period: string }) => {
                                     fill: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
                                     stroke: theme === 'dark' ? '#4b5563' : '#d1d5db',
                                     strokeWidth: 1,
+                                }}
+                            />
+                            <Legend
+                                formatter={(value, entry) => {
+                                    const niceName = getModerationActionLabel(entry?.payload?.key || value);
+                                    return <span style={{ color: theme === 'dark' ? '#f3f4f6' : '#111827' }}>{niceName}</span>;
                                 }}
                             />
                             <Pie
