@@ -33,7 +33,7 @@ const StatsPage = () => {
 
     if (error || !summaryStats) return (
         <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Объявление не найдено</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Не удалось загрузить данные</h2>
             <Button
                 onClick={() => refetch()}
             >
