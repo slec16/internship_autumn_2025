@@ -79,7 +79,7 @@ const ModeratorInfo = () => {
 
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 h-fit">
             <div className="flex justify-between pb-2 mb-2 border-b-2 border-gray-200 dark:border-gray-500">
                 <div className="flex items-center p-2 rounded-full bg-blue-200 dark:bg-blue-500">
                     <UserOutlined />

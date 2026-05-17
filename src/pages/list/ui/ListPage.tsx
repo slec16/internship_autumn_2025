@@ -1,7 +1,7 @@
 import { useAdvertisements } from "@/entities/advertisement"
 import Filters from "@/widgets/filters"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
-import { getStatusLabel, categoryMap, type Status, getStatusColor } from "@entities/advertisement"
+import { getStatusLabel, categoryMap, getStatusColor } from "@entities/advertisement"
 import { Pagination, type PaginationProps, Spin, Button } from 'antd'
 import { PictureOutlined } from '@ant-design/icons'
 import { Link } from "react-router"

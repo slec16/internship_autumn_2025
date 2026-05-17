@@ -1,8 +1,6 @@
-import { use, useState } from "react"
+import { useState } from "react"
 import { Button, Segmented, Spin } from "antd"
 import {
-    ExportOutlined,
-    FilePdfOutlined,
     RiseOutlined,
     CheckCircleOutlined,
     CloseCircleOutlined,
@@ -11,12 +9,15 @@ import {
 import ModeratorInfo from "@entities/moderator"
 import {
     useSummaryStats,
-    useActivityChart,
-    useDecisionsChart,
-    useCategoriesChart,
     convertTabValueToAPeriod
 } from "@entities/stats"
 import StatsTile from "./StatsTile"
+import PDFButton from "@/features/pdf-report"
+import CSVButton from "@/features/csv-report"
+import ActivityChart from "@/features/activity-chart"
+import CategoriesChart from "@/features/categories-chart"
+import DecisionsChart from "@/features/decisions-chart"
+
 
 const StatsPage = () => {
 
@@ -49,20 +50,8 @@ const StatsPage = () => {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-200">Статистика модератора</h3>
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="flex gap-2">
-                        <Button
-                            // onClick={exportToCSV}
-                            size="large"
-                        >
-                            <ExportOutlined />
-                            Экспорт CSV
-                        </Button>
-                        <Button
-                            // onClick={exportToPDF}
-                            size="large"
-                        >
-                            <FilePdfOutlined />
-                            PDF-отчёт
-                        </Button>
+                        <PDFButton />
+                        <CSVButton />
                     </div>
                     <Segmented<string>
                         options={['Сегодня', '7 дней', '30 дней']}
@@ -78,15 +67,17 @@ const StatsPage = () => {
                     />
                 </div>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_3fr] gap-6">
-                <ModeratorInfo />
-                <div className="space-y-6">
+            {/* <div className="grid grid-cols-1 lg:grid-cols-[1fr_3fr] gap-6"> */}
+            <div className="flex flex-col lg:flex-row">
+                <div className="w-full lg:w-1/3 pb-4 pr-0 lg:pr-4">
+                    <ModeratorInfo />
+                </div>
+                <div className="space-y-6 w-full lg:w-2/3">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <StatsTile
                             title="Проверено за период"
                             value={summaryStats.totalReviewed}
                             unit=""
-                            desc={period}
                             icon={<RiseOutlined />}
                             iconColor="bg-blue-100 dark:bg-blue-800"
                         />
@@ -94,14 +85,12 @@ const StatsPage = () => {
                             title="Одобрено"
                             value={summaryStats.approvedPercentage}
                             unit="%"
-                            desc=""
                             icon={<CheckCircleOutlined style={{ color: "rgb(0, 201, 80)" }} />}
                             iconColor="bg-green-100 dark:bg-green-900"
                         />
                         <StatsTile
                             title="Отклонено"
                             value={summaryStats.rejectedPercentage}
-                            desc=""
                             unit="%"
                             icon={<CloseCircleOutlined style={{ color: "rgb(251, 44, 54)" }} />}
                             iconColor="bg-red-100 dark:bg-red-900"
@@ -110,13 +99,21 @@ const StatsPage = () => {
                             title="Среднее время"
                             value={summaryStats.averageReviewTime}
                             unit="c."
-                            desc=""
                             icon={<ClockCircleOutlined />}
                             iconColor="bg-blue-100 dark:bg-blue-800"
                         />
                     </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="col-span-2">
+                            <ActivityChart period={period} />
+                        </div>
+                        <DecisionsChart period={period} />
+                        <CategoriesChart period={period} />
+                    </div>
                 </div>
+
             </div>
+
         </>
     )
 }
