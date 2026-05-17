@@ -1,6 +1,7 @@
 import type { 
     Period,
     StatsSummary,
+    ActivityData,
 } from "../model/types"
 
 const baseUrl = "/api/v1"
@@ -12,7 +13,7 @@ export const StatsApi = {
         return response.json()
     },
 
-    getActivityChart: async (period: Period) => {
+    getActivityChart: async (period: Period): Promise<ActivityData[]> => {
         const response = await fetch(`${baseUrl}/stats/chart/activity?period=${period}`)
         if (!response.ok) throw new Error('Failed to fetch advertisements')
         return response.json()
