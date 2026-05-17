@@ -5,7 +5,7 @@ export type {
     ModeratorStats,
     Period
 } from "./model/types"
-export { convertTabValueToAPeriod } from "./lib/lib"
+export { convertTabValueToAPeriod, addSectorColor } from "./lib/lib"
 export {
     useSummaryStats,
     useActivityChart,

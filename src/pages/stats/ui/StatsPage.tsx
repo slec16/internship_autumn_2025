@@ -25,7 +25,7 @@ const StatsPage = () => {
 
     const { data: summaryStats, isLoading, error, refetch } = useSummaryStats(convertTabValueToAPeriod(period))
 
-    console.log(summaryStats)
+    // console.log(summaryStats)
 
     if (isLoading) return (
         <div className="text-center py-12">
@@ -103,12 +103,14 @@ const StatsPage = () => {
                             iconColor="bg-blue-100 dark:bg-blue-800"
                         />
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="col-span-2">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                        <div className="lg:col-span-2">
                             <ActivityChart period={period} />
                         </div>
-                        <DecisionsChart period={period} />
-                        <CategoriesChart period={period} />
+                        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-3"> */}
+                            <DecisionsChart period={period} />
+                            <CategoriesChart period={period} />
+                        {/* </div> */}
                     </div>
                 </div>
 

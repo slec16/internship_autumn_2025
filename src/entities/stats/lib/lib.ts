@@ -11,3 +11,16 @@ export const convertTabValueToAPeriod = (period: string): Period => {
             return 'week'
     }
 }
+
+export const addSectorColor = (decision:string) => {
+    switch (decision) {
+        case "approved":
+            return "#00c950"
+        case "rejected":
+            return "#fb2c36"
+        case "requestChanges":
+            return "#2b7fff"
+        default: 
+            return '#00c950'
+    }
+}

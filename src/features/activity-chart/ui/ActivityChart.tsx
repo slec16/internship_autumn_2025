@@ -19,7 +19,7 @@ const ActivityChart = ({ period }: { period: string }) => {
 
     if (error || !activity) return (
         <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Объявление не найдено</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Не удалось загрузить статистику</h2>
             <Button
                 onClick={() => refetch()}
             >
