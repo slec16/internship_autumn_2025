@@ -38,11 +38,11 @@ const Filters = (props: FiltersProps) => {
     type SortOption = Pick<IAdvertisementsParams, 'sortBy' | 'sortOrder'>
 
     const sortOptions: { value: string; label: string; sort: SortOption }[] = [
-        { value: 'createdAt_asc',  label: 'Сначала новые',       sort: { sortBy: 'createdAt', sortOrder: 'asc' } },
-        { value: 'createdAt_desc', label: 'Сначала старые',      sort: { sortBy: 'createdAt', sortOrder: 'desc' } },
-        { value: 'price_desc',     label: 'Цена по убыванию',    sort: { sortBy: 'price',     sortOrder: 'desc' } },
-        { value: 'price_asc',      label: 'Цена по возрастанию', sort: { sortBy: 'price',     sortOrder: 'asc' } },
-        { value: 'priority_desc',   label: 'По приоритету',      sort: { sortBy: 'priority',  sortOrder: 'desc' } },
+        { value: 'createdAt_asc', label: 'Сначала новые', sort: { sortBy: 'createdAt', sortOrder: 'asc' } },
+        { value: 'createdAt_desc', label: 'Сначала старые', sort: { sortBy: 'createdAt', sortOrder: 'desc' } },
+        { value: 'price_desc', label: 'Цена по убыванию', sort: { sortBy: 'price', sortOrder: 'desc' } },
+        { value: 'price_asc', label: 'Цена по возрастанию', sort: { sortBy: 'price', sortOrder: 'asc' } },
+        { value: 'priority_desc', label: 'По приоритету', sort: { sortBy: 'priority', sortOrder: 'desc' } },
     ]
 
     const currentSortValue = `${sortBy}_${sortOrder}`
@@ -51,6 +51,12 @@ const Filters = (props: FiltersProps) => {
         const option = sortOptions.find((o) => o.value === value)
         if (option) setParams(option.sort)
     }
+
+    const hasActiveFilters =
+        selectedStatuses.length > 0 ||
+        selectedCategory !== undefined ||
+        minPrice !== undefined ||
+        maxPrice !== undefined
 
     const resetFilters = () => {
         setParams({
@@ -88,7 +94,7 @@ const Filters = (props: FiltersProps) => {
                 >
                     Фильтры
                 </Button>
-                {(selectedStatuses.length > 0 || selectedCategory || minPrice || maxPrice) && (
+                {hasActiveFilters && (
                     <Button
                         icon={<CloseOutlined />}
                         color='danger'

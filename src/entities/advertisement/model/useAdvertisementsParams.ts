@@ -17,7 +17,7 @@ type SetAdvertisementsParams = (
 ) => void
 
 /** Список допустимых ключей, извлечённый из Zod-схемы */
-const KNOWN_KEYS = Object.keys(advertisementsParamsSchema.shape) as (keyof IAdvertisementsParams)[]
+const ALLOW_KEYS = Object.keys(advertisementsParamsSchema.shape) as Array<keyof typeof advertisementsParamsSchema.shape>
 
 /**
  * Конвертирует типизированный патч обратно в строковый формат для URL.
@@ -26,7 +26,7 @@ const KNOWN_KEYS = Object.keys(advertisementsParamsSchema.shape) as (keyof IAdve
 const serialize = (patch: Patch): RawParams => {
     const out: RawParams = {}
     for (const [key, value] of Object.entries(patch)) {
-        if (value === undefined || value === '') {
+        if (value === undefined || value === '' || value === null) {
             out[key] = undefined
         } else if (Array.isArray(value)) {
             out[key] = value.length ? value.map(String) : undefined
@@ -64,7 +64,7 @@ const toQueryString = (params: RawParams): string => {
  */
 const sanitize = (raw: RawParams, parsed: IAdvertisementsParams): RawParams => {
     const out: RawParams = {}
-    for (const key of KNOWN_KEYS) {
+    for (const key of ALLOW_KEYS) {
         if (!(key in raw)) continue
         const serialized = serialize({ [key]: parsed[key] } as Patch)[key]
         if (serialized === undefined) continue

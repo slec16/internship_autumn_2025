@@ -27,6 +27,11 @@ const optionalIntParam = (min: number) =>
         z.number().int().min(min).optional().catch(undefined),
     )
 
+const singleStringParam = z.preprocess(
+    (v) => (Array.isArray(v) ? undefined : v),
+    z.string().default(''),
+)
+
 export const advertisementsParamsSchema = z.object({
     page: intParam(1, 1).default(1),
     limit: intParam(1, 10).default(10),
@@ -34,7 +39,7 @@ export const advertisementsParamsSchema = z.object({
     categoryId: optionalIntParam(0),
     minPrice: optionalIntParam(0),
     maxPrice: optionalIntParam(0),
-    search: z.string().default(''),
+    search: singleStringParam,
     sortBy: z.enum(SORT_BY).catch('createdAt').default('createdAt'),
     sortOrder: z.enum(SORT_ORDER).catch('asc').default('asc'),
 })
