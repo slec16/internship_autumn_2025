@@ -35,7 +35,7 @@ const CategoriesChart = ({ period }: { period: string }) => {
         })
     }
 
-    const isEmpty = preparedData(category).reduce((acc, cur) => acc = + cur.value, 0) == 0
+    const isEmpty = preparedData(category).reduce((acc, cur) => acc + cur.value, 0) === 0
 
     return (
         <div className="w-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow p-4 gap-y-2">

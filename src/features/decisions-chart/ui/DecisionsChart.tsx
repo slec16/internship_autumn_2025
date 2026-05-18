@@ -14,6 +14,8 @@ const DecisionsChart = ({ period }: { period: string }) => {
     const { theme } = useTheme()
     const { data: decisions, isLoading, error, refetch } = useDecisionsChart(convertTabValueToAPeriod(period))
 
+    console.log(decisions)
+
     if (isLoading) return (
         <div className="text-center py-12">
             <Spin description="Загрузка..." size="large" />
@@ -37,7 +39,9 @@ const DecisionsChart = ({ period }: { period: string }) => {
         })
     }
 
-    const isEmpty = preparedData(decisions).reduce((acc, cur) => acc = + cur.value, 0) == 0
+    const isEmpty = preparedData(decisions).reduce((acc, cur) => acc + cur.value, 0) === 0
+
+    console.log(preparedData(decisions), isEmpty)
 
     return (
         <div className="w-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow p-4 gap-y-2">
