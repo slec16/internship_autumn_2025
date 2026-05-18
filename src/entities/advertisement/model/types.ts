@@ -37,18 +37,6 @@ type ModerationHistory = {
     timestamp: string
 }
 
-export interface IAdvertisementsParams {
-    page: number
-    limit: number
-    status: Status[]
-    categoryId: number
-    minPrice: number
-    maxPrice: number
-    search: string
-    sortBy: "createdAt" | "price" | "priority"
-    sortOrder: "asc" | "desc"
-}
-
 type Pagination = {
     currentPage: number
     totalPages: number

@@ -1,9 +1,10 @@
 import type {
     Advertisement,
-    IAdvertisementsParams,
+    // IAdvertisementsParams,
     IAdvertisementsRejectParams,
     IAdvertisementsResponse
 } from "../model/types"
+import type { IAdvertisementsParams } from "../model/params.schema"
 
 
 // TODO: add .env file
@@ -11,11 +12,12 @@ import type {
 const baseUrl = "/api/v1"
 
 export const advertisementApi = {
-    getAdvertisements: async (params: any): Promise<IAdvertisementsResponse> => {
+    getAdvertisements: async (params: Partial<IAdvertisementsParams>): Promise<IAdvertisementsResponse> => {
 
         const requestParams = new URLSearchParams();
 
         for (const [key, value] of Object.entries(params)) {
+            if (value === undefined || value === null) continue
             if (Array.isArray(value)) {
                 value.forEach(v => requestParams.append(key, String(v)))
             } else {

@@ -1,6 +1,6 @@
 import { useAdvertisements } from "@/entities/advertisement"
 import Filters from "@/widgets/filters"
-import { useQueryParams } from "@/shared/lib/useQueryParams"
+import { useAdvertisementsParams } from "@entities/advertisement"
 import { getStatusLabel, categoryMap, getStatusColor } from "@entities/advertisement"
 import { Pagination, type PaginationProps, Spin, Button } from 'antd'
 import { PictureOutlined } from '@ant-design/icons'
@@ -8,14 +8,14 @@ import { Link } from "react-router"
 
 const ListPage = () => {
 
-    const [params, setParams] = useQueryParams()
+    const [params, setParams] = useAdvertisementsParams()
 
-    const page = (params.page as string) || '1'
+    const page = params.page
 
     const { data: response, isLoading, error, refetch, isRefetching } = useAdvertisements(params)
 
     const onChangePage: PaginationProps['onChange'] = (page) => {
-        setParams((prev) => ({ ...prev, page: String(page) }))
+        setParams({ page: page })
     }
 
     return (

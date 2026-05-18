@@ -3,8 +3,7 @@ import { Input, Button, Checkbox, InputNumber, Select, Radio } from 'antd'
 import type { CheckboxGroupProps } from 'antd/es/checkbox'
 import { SearchOutlined, FilterOutlined, BarsOutlined, CloseOutlined } from '@ant-design/icons'
 import { getStatusLabel, categoryMap, type Status } from "@entities/advertisement"
-import { useQueryParams } from '@/shared/lib/useQueryParams'
-import { parseQueryString } from "../lib/parseQueryString"
+import { useAdvertisementsParams, type IAdvertisementsParams } from "@entities/advertisement"
 
 type FiltersProps = {
     totalItems: number | undefined
@@ -14,45 +13,20 @@ const Filters = (props: FiltersProps) => {
 
     const { totalItems } = props
 
-    const [params, setParams] = useQueryParams()
+    const [params, setParams] = useAdvertisementsParams()
     const [showFilters, setShowFilters] = useState(false)
 
-    const search = (params.search as string) || ''
-    const selectedStatuses = (params.status as string[]) || []
-    const selectedCategory = (params.categoryId as string) || ''
-    const minPrice = (params.minPrice as string) || ''
-    const maxPrice = (params.maxPrice as string) || ''
-    const sortBy = (params.sortBy as string) ?? 'createdAt'
-    const sortOrder = (params.sortOrder as string) ?? 'acs'
+    const search = params.search
+    const selectedStatuses = params.status
+    const selectedCategory = params.categoryId
+    const minPrice = params.minPrice
+    const maxPrice = params.maxPrice
+    const sortBy = params.sortBy
+    const sortOrder = params.sortOrder
 
-    const currentValue = `sortBy=${sortBy}&sortOrder=${sortOrder}`
-
-    const toggleStatus = (status: Status) => {
-
-        let currentStatuses = selectedStatuses
-        if (!Array.isArray(selectedStatuses)) {
-            if (typeof currentStatuses === 'string' && currentStatuses) {
-                currentStatuses = [currentStatuses]
-            } else {
-                currentStatuses = []
-            }
-        }
-
-        const updatedStatuses = currentStatuses.includes(status)
-            ? currentStatuses.filter(s => s !== status)
-            : [...currentStatuses, status];
-
-
-        setParams((prev) => ({
-            ...prev,
-            status: updatedStatuses
-        }))
-
-    }
-
-    const convertRecordToOptions = (record: Record<number, string>): CheckboxGroupProps<string>['options'] => {
+    const convertRecordToOptions = (record: Record<number, string>): CheckboxGroupProps<number>['options'] => {
         return Object.entries(record).map(([key, text]) => ({
-            value: key,
+            value: Number(key),
             label: (
                 <span className="text-base text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white font-medium">
                     {text}
@@ -61,26 +35,31 @@ const Filters = (props: FiltersProps) => {
         }))
     }
 
-    const handleSort = (value: string) => {
-        const parsed = parseQueryString(value)
-        const newSortBy = (parsed.sortBy as string) || 'createdAt'
-        const newSortOrder = (parsed.sortOrder as string) || 'acs'
+    type SortOption = Pick<IAdvertisementsParams, 'sortBy' | 'sortOrder'>
 
-        setParams((prev) => ({
-            ...prev,
-            sortBy: newSortBy,
-            sortOrder: newSortOrder,
-        }))
+    const sortOptions: { value: string; label: string; sort: SortOption }[] = [
+        { value: 'createdAt_asc',  label: 'Сначала новые',       sort: { sortBy: 'createdAt', sortOrder: 'asc' } },
+        { value: 'createdAt_desc', label: 'Сначала старые',      sort: { sortBy: 'createdAt', sortOrder: 'desc' } },
+        { value: 'price_desc',     label: 'Цена по убыванию',    sort: { sortBy: 'price',     sortOrder: 'desc' } },
+        { value: 'price_asc',      label: 'Цена по возрастанию', sort: { sortBy: 'price',     sortOrder: 'asc' } },
+        { value: 'priority_desc',   label: 'По приоритету',      sort: { sortBy: 'priority',  sortOrder: 'desc' } },
+    ]
+
+    const currentSortValue = `${sortBy}_${sortOrder}`
+
+    const handleSort = (value: string) => {
+        const option = sortOptions.find((o) => o.value === value)
+        if (option) setParams(option.sort)
     }
 
     const resetFilters = () => {
-        setParams((prev) => ({
-            ...prev,
+        setParams({
             status: [],
             categoryId: undefined,
             minPrice: undefined,
-            maxPrice: undefined
-        }))
+            maxPrice: undefined,
+            page: 1
+        })
     }
 
 
@@ -96,7 +75,7 @@ const Filters = (props: FiltersProps) => {
                         allowClear
                         value={search}
                         onChange={(e) =>
-                            setParams((prev) => ({ ...prev, search: e.target.value }))
+                            setParams({ search: e.target.value })
                         }
                     />
                 </div>
@@ -133,7 +112,14 @@ const Filters = (props: FiltersProps) => {
                                 <Checkbox
                                     key={status}
                                     checked={selectedStatuses.includes(status)}
-                                    onChange={() => toggleStatus(status)}
+                                    onChange={() =>
+                                        setParams((prev) => ({
+                                            page: 1,
+                                            status: prev.status.includes(status)
+                                                ? prev.status.filter((s) => s !== status)
+                                                : [...prev.status, status],
+                                        }))
+                                    }
                                 >
                                     <span className="text-base text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white font-medium">{getStatusLabel(status)}</span>
                                 </Checkbox>
@@ -150,7 +136,7 @@ const Filters = (props: FiltersProps) => {
                                 vertical
                                 value={selectedCategory}
                                 onChange={(e) =>
-                                    setParams((prev) => ({ ...prev, categoryId: e.target.value }))
+                                    setParams({ categoryId: e.target.value, page: 1 })
                                 }
                                 options={convertRecordToOptions(categoryMap)}
 
@@ -167,11 +153,11 @@ const Filters = (props: FiltersProps) => {
                                 type='number'
                                 style={{ width: '100%' }}
                                 placeholder='От'
-                                min='0'
+                                min={0}
                                 max={maxPrice}
                                 value={minPrice}
                                 onChange={(e) =>
-                                    setParams((prev) => ({ ...prev, minPrice: e !== null ? String(e) : undefined }))
+                                    setParams({ minPrice: e, page: 1 })
                                 }
                             />
                             <InputNumber
@@ -181,7 +167,7 @@ const Filters = (props: FiltersProps) => {
                                 min={minPrice}
                                 value={maxPrice}
                                 onChange={(e) =>
-                                    setParams((prev) => ({ ...prev, maxPrice: e !== null ? String(e) : undefined }))
+                                    setParams({ maxPrice: e, page: 1 })
                                 }
                             />
                         </div>
@@ -202,14 +188,8 @@ const Filters = (props: FiltersProps) => {
                     </label>
                     <Select
                         style={{ width: 220 }}
-                        value={currentValue}
-                        options={[
-                            { value: 'sortBy=createdAt&sortOrder=acs', label: 'Сначала новые' },
-                            { value: 'sortBy=createdAt&sortOrder=desc', label: 'Сначала старые' },
-                            { value: 'sortBy=price&sortOrder=acs', label: 'Цена по убыванию' },
-                            { value: 'sortBy=price&sortOrder=decs', label: 'Цена по возрастанию' },
-                            { value: 'sortBy=priority&sortOrder=acs', label: 'По приоритету' },
-                        ]}
+                        value={currentSortValue}
+                        options={sortOptions}
                         onChange={handleSort}
                     />
                 </div>
