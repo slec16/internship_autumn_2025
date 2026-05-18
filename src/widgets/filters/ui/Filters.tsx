@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Input, Button, Checkbox, InputNumber, Select, Radio } from 'antd'
 import type { CheckboxGroupProps } from 'antd/es/checkbox'
 import { SearchOutlined, FilterOutlined, BarsOutlined, CloseOutlined } from '@ant-design/icons'
 import { getStatusLabel, categoryMap, type Status } from "@entities/advertisement"
 import { useAdvertisementsParams, type IAdvertisementsParams } from "@entities/advertisement"
+import { useDebounce } from '@/shared/lib/useDebounce'
 
 type FiltersProps = {
     totalItems: number | undefined
@@ -23,6 +24,17 @@ const Filters = (props: FiltersProps) => {
     const maxPrice = params.maxPrice
     const sortBy = params.sortBy
     const sortOrder = params.sortOrder
+
+    const [localSearch, setLocalSearch] = useState(search)
+    const debouncedSearch = useDebounce(localSearch, 400)
+
+    useEffect(() => {
+        setParams({ search: debouncedSearch, page: 1 })
+    }, [debouncedSearch, setParams])
+
+    useEffect(() => {
+        setLocalSearch(params.search)
+    }, [params.search])
 
     const convertRecordToOptions = (record: Record<number, string>): CheckboxGroupProps<number>['options'] => {
         return Object.entries(record).map(([key, text]) => ({
@@ -79,10 +91,8 @@ const Filters = (props: FiltersProps) => {
                         size='large'
                         prefix={<SearchOutlined />}
                         allowClear
-                        value={search}
-                        onChange={(e) =>
-                            setParams({ search: e.target.value })
-                        }
+                        value={localSearch}
+                        onChange={(e) => setLocalSearch(e.target.value)}
                     />
                 </div>
                 <Button
